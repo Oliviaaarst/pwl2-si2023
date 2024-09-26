@@ -4,10 +4,24 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Product extends Model
 {
     use HasFactory;
+    /**
+     * 
+     * @var array
+     */
+    protected $fillable = [
+        'product_category_id',
+        'id_supplier',
+        'image',
+        'title',
+        'description',
+        'price',
+        'stock'
+    ];
     public function get_product(){
         //get all products
         $sql = $this->select("products.*", "category_product.product_category_name as product_category_name", "suppliers.supplier_name")
@@ -15,5 +29,27 @@ class Product extends Model
                     ->join('suppliers', 'suppliers.id', '=', 'products.id_supplier'); // Join antara tabel suppliers dan products
 
         return $sql;
+    }
+
+    public function get_category_product(){
+        //getallprpduct
+        $sql = DB::table('category_product')->select('*');
+
+        return $sql;
+    }
+    public $timestamps = true;
+
+    public static function storeProduct($request, $image)
+    {
+        //simpan product baru
+        return self::create([
+            'product_category_id'   => $request->product_category_id,
+            'id_supplier'           => $request->id_supplier,
+            'image'                 => $image->hashName(),
+            'title'                 => $request->title,
+            'description'           => $request->description,
+            'price'                 => $request->price,
+            'stock'                 => $request->stock,
+        ]);
     }
 }
